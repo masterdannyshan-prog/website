@@ -63,6 +63,39 @@ footer{margin-top:.75rem;padding:4rem 2.5rem;background:var(--navy);color:#fff}.
   .program-list .program{padding:1.75rem 1rem;gap:.75rem}
   .program-list .pnum{flex-basis:1.5rem}
 }
+
+/* Consistent spacing and interaction system: rem units preserve adaptive sizing. */
+:root{--section-space:6rem;--section-gap:1.5rem;--row-space:.5rem;--row-radius:1.5rem}
+main>section+section,main>footer{margin-top:var(--section-gap)}
+main>.trust,main>.programs,main>.facilities,main>.stats,main>.testimonials{
+  padding-top:var(--section-space);padding-bottom:var(--section-space)
+}
+main>.programs{border-radius:var(--large)}
+.program-list{display:grid;gap:var(--row-space)}
+.program-list .program,.program-list>li:last-child .program{
+  border:1px solid transparent;border-radius:var(--row-radius);
+  transition:background-color .22s ease,border-color .22s ease,box-shadow .22s ease
+}
+.program-list .program:focus-visible{
+  background:#fff;border-color:var(--light);
+  outline:2px solid var(--light);outline-offset:2px
+}
+.program-list .go{transition:color .22s ease,background-color .22s ease}
+.pill:active,.controls .arrow:active{scale:.97}
+.controls .arrow{transition:background-color .22s ease,scale .18s ease}
+.field input:focus,.field textarea:focus{outline:2px solid #5790e640;border-color:var(--light)}
+@media(hover:hover) and (min-width:769px){
+  .program-list .program:hover{background:#fff;border-color:var(--line);box-shadow:0 .25rem 1rem #0f2f6308}
+  .program-list .program:hover .go{background:var(--navy);color:#fff}
+  .program-list .program:hover .go-arrow{transform:translateX(.125rem)}
+  .footer-nav a:hover,.links a:hover{color:#fff;text-decoration:underline;text-underline-offset:.25rem}
+}
+@media(max-width:640px){
+  :root{--section-space:4rem;--section-gap:1rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .program-list .program,.program-list .go,.controls .arrow{transition:none}
+}
 </style></head>
 <body>
 <div class="loader" id="loader"><div class="loader-inner"><div class="brand">◯ Baseline</div><div class="progress"><i></i></div></div></div>
