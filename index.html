@@ -96,6 +96,30 @@ main>.programs{border-radius:var(--large)}
 @media(prefers-reduced-motion:reduce){
   .program-list .program,.program-list .go,.controls .arrow{transition:none}
 }
+
+/* Three scroll intervals, followed by a natural release into Programs. */
+main>.trust{
+  height:340svh;padding:0;overflow:visible;
+}
+.trust-pin{
+  position:sticky;top:0;height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:3rem 2.5rem;background:var(--bg);
+}
+.trust-pin .trust-stage{flex:1;min-height:0;display:grid;align-items:center}
+.trust-pin .controls{flex-shrink:0;margin-top:2rem}
+.trust-pin .coach-position{position:absolute;inset:0;margin:0;display:grid;place-items:center}
+.trust-pin .coach-position #coach{max-height:62svh;width:auto;max-width:16rem;height:21.333rem}
+@media(max-width:640px){
+  .trust-pin{padding:2rem 1.5rem}
+  .trust-pin .ghost{font-size:8.2vw}
+  .trust-pin .coach-position #coach{height:15rem;max-height:48svh;max-width:11.25rem}
+}
+@media(prefers-reduced-motion:reduce){
+  main>.trust{height:auto}
+  .trust-pin{position:relative;height:auto;min-height:36rem}
+  .trust-pin .trust-stage{min-height:26rem}
+}
 </style></head>
 <body>
 <div class="loader" id="loader"><div class="loader-inner"><div class="brand">◯ Baseline</div><div class="progress"><i></i></div></div></div>
@@ -104,7 +128,7 @@ main>.programs{border-radius:var(--large)}
 <header><nav class="side left"><a href="#programs">Programs &amp; Coaches</a><a href="#facilities">Club &amp; Events</a></nav><a class="center brand" href="#home">◯ Baseline</a><div class="side right"><button class="visit-text open-modal">Book a Visit</button><button class="circle" id="open-menu" aria-label="Open menu"><span class="burger"><i></i><i></i></span></button></div></header>
 <h1><span class="word"><b>Own</b></span> <span class="word"><b>The</b></span> <span class="word"><b>Court</b></span></h1>
 <div class="hero-bottom"><p class="tag"><span class="line"><span>Show Up,</span></span><span class="line"><span>Level Up</span></span></p><div class="cards"><div class="collection reveal"><article class="glass mini"><img id="c-img" src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/2.webp" alt=""><div><p class="mb" id="c-brand"></p><p class="mt" id="c-title"></p><a id="c-cta" href="#shop"></a></div></article><div class="dots" id="c-dots"></div></div><article class="glass member reveal"><div class="member-copy"><strong class="nine">9K+</strong><div><div class="avatars"><i style="background:#5790e6"></i><i style="background:#c2e029"></i><i style="background:#0b6e97"></i><i style="background:#fff"></i></div><small>Members on court</small></div></div><img src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/1.webp" alt="Player waiting to return on a clay court" loading="lazy"></article></div></div></section>
-<section class="trust"><div class="trust-stage"><div class="ghost" id="ghost"></div><div class="coach-position"><figure class="coach coach-reveal" id="coach"><img id="coach-img" src="" alt=""><figcaption class="caption"><strong id="coach-name"></strong><small id="coach-role"></small></figcaption></figure></div></div><div class="controls"><button class="arrow prev" id="prev" aria-label="Previous coach">←</button><div class="dots dark" id="t-dots"></div><button class="arrow solid" id="next" aria-label="Next coach">→</button></div></section>
+<section class="trust" aria-label="Meet the coaches"><div class="trust-pin"><div class="trust-stage"><div class="ghost" id="ghost"></div><div class="coach-position"><figure class="coach coach-reveal" id="coach"><img id="coach-img" src="" alt=""><figcaption class="caption"><strong id="coach-name"></strong><small id="coach-role"></small></figcaption></figure></div></div><div class="controls"><button class="arrow prev" id="prev" aria-label="Previous coach">←</button><div class="dots dark" id="t-dots"></div><button class="arrow solid" id="next" aria-label="Next coach">→</button></div></div></section>
 <section class="programs" id="programs"><div class="eyebrow">Training programs</div><h2 class="title"><span class="line"><span>Built for</span></span><span class="line"><span>every level</span></span></h2><ul class="program-list" id="program-list"></ul></section>
 <section class="facilities round" id="facilities"><div class="facility-grid"><div class="intro"><img class="intro-icon reveal" src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/3.webp" alt="Player stretching for a forehand on clay"><h2 class="title"><span class="line"><span>Tour Our</span></span><span class="line"><span>World-Class</span></span><span class="line"><span>Courts</span></span></h2><p class="reveal">Reserve a court for focused practice, squad drills, or private sessions — and train in the same conditions you'll compete in.</p></div><div class="courts"><figure class="court reveal"><img src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/1.webp" alt="Player on the baseline of an outdoor clay court" loading="lazy"><figcaption class="caption"><strong>Redline Clay</strong><small>A fast outdoor clay court tuned for long, physical rallies.</small></figcaption></figure><figure class="court reveal"><img src="https://api.getlayers.ai/storage/v1/object/public/public/assets/baseline-88535e4000/4.webp" alt="Player following through on a blue hard court" loading="lazy"><figcaption class="caption blue"><strong>Harbor Court</strong><small>A sheltered hard court built for precision and night play.</small></figcaption></figure></div></div></section>
 <section class="stats round"><div class="eyebrow light">By the numbers</div><h2 class="title"><span class="line"><span>A club that</span></span><span class="line"><span>keeps score</span></span></h2><dl class="stats-grid" id="stats"></dl></section>
@@ -147,23 +171,34 @@ function coach(i){
   }else previous.remove();
   document.querySelectorAll("#t-dots .dot").forEach((dot,j)=>{dot.classList.toggle("active",j===ti);dot.setAttribute("aria-current",j===ti?"true":"false")});
 }
-let lastCoachAdvance=0,scrollDistance=0,previousScroll=window.scrollY;
-function advanceCoach(i){lastCoachAdvance=performance.now();scrollDistance=0;coach(i)}
+
+const trustSection=document.querySelector(".trust");
+let coachStarted=false;
+function coachScrollGeometry(){
+  const rect=trustSection.getBoundingClientRect();
+  const travel=Math.max(1,trustSection.offsetHeight-innerHeight);
+  return {start:window.scrollY+rect.top,progress:Math.max(0,Math.min(1,-rect.top/travel)),travel};
+}
+function advanceCoach(i){
+  const index=(i+coaches.length)%coaches.length;
+  if(reduced){coach(index);return}
+  const geometry=coachScrollGeometry();
+  // Land safely inside each slide's scroll interval.
+  lenis.scrollTo(geometry.start+geometry.travel*(index+.12)/coaches.length,{duration:.7});
+}
 dots(document.getElementById("t-dots"),3,i=>advanceCoach(i));
 document.getElementById("prev").onclick=()=>advanceCoach(ti-1);
 document.getElementById("next").onclick=()=>advanceCoach(ti+1);
 coach(0);
-// Advance once per deliberate downward scroll while the carousel is visible.
-// Never prevent scrolling or trap the visitor in this section.
-function watchCoachScroll(now){
-  const current=window.scrollY,delta=current-previousScroll;previousScroll=current;
-  const rect=document.querySelector(".trust-stage").getBoundingClientRect();
-  const visible=rect.top<innerHeight*.65&&rect.bottom>innerHeight*.25;
-  if(visible&&document.body.classList.contains("ready")){
-    if(delta>0)scrollDistance+=delta;
-    else if(delta<0)scrollDistance=0;
-    if(scrollDistance>=Math.max(100,innerHeight*.16)&&now-lastCoachAdvance>900)advanceCoach(ti+1);
-  }else scrollDistance=0;
+function watchCoachScroll(){
+  if(!reduced&&document.body.classList.contains("ready")){
+    const rect=trustSection.getBoundingClientRect();
+    if(rect.top<=innerHeight*.15&&rect.bottom>0){
+      const geometry=coachScrollGeometry();
+      const index=Math.min(coaches.length-1,Math.floor(geometry.progress*coaches.length));
+      if(!coachStarted||index!==ti){coachStarted=true;coach(index)}
+    }
+  }
   requestAnimationFrame(watchCoachScroll);
 }
 requestAnimationFrame(watchCoachScroll);
